@@ -1,8 +1,6 @@
 package com.lb.facebook.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import com.lb.facebook.util.JSONWriterUtil;
 
 import facebook4j.Facebook;
 import facebook4j.FacebookException;
@@ -14,27 +12,6 @@ import facebook4j.auth.AccessToken;
 
 public class FbDataServiceImpl implements FbDataService {
 
-	private Facebook getFacebookInstance(String accessTokenString) {
-		Facebook facebook = new FacebookFactory().getInstance();
-		facebook.setOAuthAppId("248278838697018", "e667cfb9a03ec31cb2369983466c8830");
-		facebook.setOAuthPermissions("user_friends, email");
-		AccessToken accessToken = new AccessToken(accessTokenString);
-		facebook.setOAuthAccessToken(accessToken);
-		return facebook;
-	}
-	
-	private String writeToJson(Object object) {
-		String jsonOutput = "";
-		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-		try {
-			jsonOutput = ow.writeValueAsString(object);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-		return jsonOutput;
-	}
-	
 	public String getFriends(String accessTokenString) throws FacebookException {
 		
 		Facebook facebook = getFacebookInstance(accessTokenString);
@@ -43,7 +20,7 @@ public class FbDataServiceImpl implements FbDataService {
 		String json = null;
 		
 		if(null != friends && friends.size() > 0) {
-			json = writeToJson(friends);
+			json = JSONWriterUtil.writeToJson(friends);
 		}
 		
 		return json;
@@ -56,10 +33,22 @@ public class FbDataServiceImpl implements FbDataService {
 		
 		User user = facebook.getMe();
 		if(null != user)
-			json = writeToJson(user);
+			json = JSONWriterUtil.writeToJson(user);
 		
 		return json;
 	}
+
+	public String getUserProfileByID(String accessToken) throws FacebookException {
+		return null;
+	}
 	
+	private Facebook getFacebookInstance(String accessTokenString) {
+		Facebook facebook = new FacebookFactory().getInstance();
+		facebook.setOAuthAppId("248278838697018", "e667cfb9a03ec31cb2369983466c8830");
+		facebook.setOAuthPermissions("user_friends, email");
+		AccessToken accessToken = new AccessToken(accessTokenString);
+		facebook.setOAuthAccessToken(accessToken);
+		return facebook;
+	}
 	
 }
